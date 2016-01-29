@@ -8,18 +8,24 @@ public class Hangman extends javax.swing.JFrame
 {
     private CardLayout cl;
     private Timer timer;
+    private gamePanel game;
     /**
      * Creates new form Project245
      */
     public Hangman() 
     {
         initComponents();
-        
+        game = new gamePanel();
         cl = new CardLayout();
         mainPanel.setLayout(cl);
+        
         mainPanel.add("splash card", splashPanel);
         mainPanel.add("menu card", menuPanel);
-
+        mainPanel.add("game card", game);
+        mainPanel.add("high scores", highScores);
+        mainPanel.add("credits card", creditsPanel);
+        //Jose Marquez - place center of the screen
+        this.setLocationRelativeTo(null);
         timer = new Timer(3000, new TimerListener());
         timer.setRepeats(false);
         timer.start();
@@ -29,7 +35,7 @@ public class Hangman extends javax.swing.JFrame
     {
         public void actionPerformed(ActionEvent evt)
         {
-            cl.show(mainPanel, "menu card");
+            goMenu();
         }
     }
 
@@ -40,6 +46,18 @@ public class Hangman extends javax.swing.JFrame
     public void goMenu()
     {
         cl.show(mainPanel, "menu card");
+    }
+    public void startGame()
+    {
+        cl.show(mainPanel, "game card");
+    }
+    public void goHighScores()
+    {
+        cl.show(mainPanel, "high scores");
+    }
+    public void goCredits()
+    {
+        cl.show(mainPanel, "credits card");
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -56,13 +74,25 @@ public class Hangman extends javax.swing.JFrame
         jLabel1 = new javax.swing.JLabel();
         menuPanel = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        highScoreBtn = new javax.swing.JButton();
+        creditsBtn = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
+        highScores = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
+        backBtn1 = new javax.swing.JButton();
+        score1 = new javax.swing.JLabel();
+        score = new javax.swing.JLabel();
+        score3 = new javax.swing.JLabel();
+        score4 = new javax.swing.JLabel();
+        score5 = new javax.swing.JLabel();
+        creditsPanel = new javax.swing.JPanel();
+        name1 = new javax.swing.JLabel();
+        name2 = new javax.swing.JLabel();
+        backBtn = new javax.swing.JButton();
+        jLabel6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(0, 0, 0));
-        setPreferredSize(new java.awt.Dimension(600, 400));
         setResizable(false);
 
         mainPanel.setPreferredSize(new java.awt.Dimension(600, 400));
@@ -71,11 +101,6 @@ public class Hangman extends javax.swing.JFrame
         splashPanel.setMaximumSize(new java.awt.Dimension(600, 400));
         splashPanel.setMinimumSize(new java.awt.Dimension(600, 400));
         splashPanel.setPreferredSize(new java.awt.Dimension(600, 400));
-        splashPanel.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-            public void propertyChange(java.beans.PropertyChangeEvent evt) {
-                splashPanelPropertyChange(evt);
-            }
-        });
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 48)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
@@ -111,6 +136,9 @@ public class Hangman extends javax.swing.JFrame
         );
 
         menuPanel.setBackground(new java.awt.Color(0, 0, 0));
+        menuPanel.setMaximumSize(new java.awt.Dimension(600, 400));
+        menuPanel.setMinimumSize(new java.awt.Dimension(600, 400));
+        menuPanel.setPreferredSize(new java.awt.Dimension(600, 400));
 
         jButton1.setBackground(new java.awt.Color(0, 0, 0));
         jButton1.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
@@ -122,15 +150,25 @@ public class Hangman extends javax.swing.JFrame
             }
         });
 
-        jButton2.setBackground(new java.awt.Color(0, 0, 0));
-        jButton2.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(255, 255, 255));
-        jButton2.setText("HIGHSCORES");
+        highScoreBtn.setBackground(new java.awt.Color(0, 0, 0));
+        highScoreBtn.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
+        highScoreBtn.setForeground(new java.awt.Color(255, 255, 255));
+        highScoreBtn.setText("HIGHSCORES");
+        highScoreBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                highScoreBtnActionPerformed(evt);
+            }
+        });
 
-        jButton3.setBackground(new java.awt.Color(0, 0, 0));
-        jButton3.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
-        jButton3.setForeground(new java.awt.Color(255, 255, 255));
-        jButton3.setText("Credits");
+        creditsBtn.setBackground(new java.awt.Color(0, 0, 0));
+        creditsBtn.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
+        creditsBtn.setForeground(new java.awt.Color(255, 255, 255));
+        creditsBtn.setText("Credits");
+        creditsBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                creditsBtnActionPerformed(evt);
+            }
+        });
 
         jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bottle.png"))); // NOI18N
         jLabel4.setText("jLabel4");
@@ -147,8 +185,8 @@ public class Hangman extends javax.swing.JFrame
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(menuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(menuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jButton2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButton3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(highScoreBtn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(creditsBtn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
@@ -160,23 +198,158 @@ public class Hangman extends javax.swing.JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(highScoreBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(205, Short.MAX_VALUE))
+                .addComponent(creditsBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(26, Short.MAX_VALUE))
+        );
+
+        highScores.setPreferredSize(new java.awt.Dimension(600, 400));
+
+        jLabel5.setFont(new java.awt.Font("Tempus Sans ITC", 1, 48)); // NOI18N
+        jLabel5.setText("HIGHSCORES");
+
+        backBtn1.setText("Back");
+        backBtn1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                backBtn1ActionPerformed(evt);
+            }
+        });
+
+        score1.setText("Highscore1");
+
+        score.setText("Highscore2");
+
+        score3.setText("Highscore3");
+
+        score4.setText("Highscore4");
+
+        score5.setText("Highscore5");
+
+        javax.swing.GroupLayout highScoresLayout = new javax.swing.GroupLayout(highScores);
+        highScores.setLayout(highScoresLayout);
+        highScoresLayout.setHorizontalGroup(
+            highScoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, highScoresLayout.createSequentialGroup()
+                .addContainerGap(97, Short.MAX_VALUE)
+                .addComponent(backBtn1)
+                .addContainerGap(448, Short.MAX_VALUE))
+            .addGroup(highScoresLayout.createSequentialGroup()
+                .addGap(178, 178, 178)
+                .addGroup(highScoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(score5, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(score4, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(score3, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(score, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(score1, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5))
+                .addContainerGap(99, Short.MAX_VALUE))
+        );
+        highScoresLayout.setVerticalGroup(
+            highScoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(highScoresLayout.createSequentialGroup()
+                .addGap(39, 39, 39)
+                .addComponent(jLabel5)
+                .addGap(18, 18, 18)
+                .addComponent(score1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(score, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(score3, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(score4, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(score5, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(63, 63, 63)
+                .addComponent(backBtn1)
+                .addContainerGap(36, Short.MAX_VALUE))
+        );
+
+        creditsPanel.setPreferredSize(new java.awt.Dimension(600, 400));
+
+        name1.setFont(new java.awt.Font("Tempus Sans ITC", 1, 18)); // NOI18N
+        name1.setText("Timothy Ngo, 009980659");
+
+        name2.setFont(new java.awt.Font("Tempus Sans ITC", 1, 18)); // NOI18N
+        name2.setText("Jose Marquez, 009990552");
+
+        backBtn.setText("Back");
+        backBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                backBtnActionPerformed(evt);
+            }
+        });
+
+        jLabel6.setFont(new java.awt.Font("Tempus Sans ITC", 1, 48)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(204, 0, 0));
+        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel6.setText("Credits");
+        jLabel6.setToolTipText("");
+
+        javax.swing.GroupLayout creditsPanelLayout = new javax.swing.GroupLayout(creditsPanel);
+        creditsPanel.setLayout(creditsPanelLayout);
+        creditsPanelLayout.setHorizontalGroup(
+            creditsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(creditsPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(backBtn)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, creditsPanelLayout.createSequentialGroup()
+                .addContainerGap(179, Short.MAX_VALUE)
+                .addGroup(creditsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(name2, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(creditsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(name1, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, creditsPanelLayout.createSequentialGroup()
+                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(27, 27, 27))))
+                .addGap(184, 184, 184))
+        );
+        creditsPanelLayout.setVerticalGroup(
+            creditsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(creditsPanelLayout.createSequentialGroup()
+                .addGap(50, 50, 50)
+                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(name1, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(name2, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 142, Short.MAX_VALUE)
+                .addComponent(backBtn)
+                .addGap(28, 28, 28))
         );
 
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(splashPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addComponent(menuPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(splashPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(mainPanelLayout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(highScores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(mainPanelLayout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(creditsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(splashPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addComponent(menuPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(splashPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(mainPanelLayout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(highScores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(mainPanelLayout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(creditsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -199,13 +372,27 @@ public class Hangman extends javax.swing.JFrame
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void splashPanelPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_splashPanelPropertyChange
-
-    }//GEN-LAST:event_splashPanelPropertyChange
-
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        startGame();
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void backBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backBtn1ActionPerformed
+
+        goMenu();
+    }//GEN-LAST:event_backBtn1ActionPerformed
+
+    private void backBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backBtnActionPerformed
+
+        goMenu();
+    }//GEN-LAST:event_backBtnActionPerformed
+
+    private void highScoreBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_highScoreBtnActionPerformed
+        goHighScores();
+    }//GEN-LAST:event_highScoreBtnActionPerformed
+
+    private void creditsBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_creditsBtnActionPerformed
+        goCredits();
+    }//GEN-LAST:event_creditsBtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -251,14 +438,27 @@ public class Hangman extends javax.swing.JFrame
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton backBtn;
+    private javax.swing.JButton backBtn1;
+    private javax.swing.JButton creditsBtn;
+    private javax.swing.JPanel creditsPanel;
+    private javax.swing.JButton highScoreBtn;
+    private javax.swing.JPanel highScores;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JPanel menuPanel;
+    private javax.swing.JLabel name1;
+    private javax.swing.JLabel name2;
+    private javax.swing.JLabel score;
+    private javax.swing.JLabel score1;
+    private javax.swing.JLabel score3;
+    private javax.swing.JLabel score4;
+    private javax.swing.JLabel score5;
     private javax.swing.JPanel splashPanel;
     // End of variables declaration//GEN-END:variables
 }
