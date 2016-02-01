@@ -1,60 +1,100 @@
-
+/***************************************************************
+* file: Hangman.java
+* author: Team Water Bottle
+* class: CS 245 – Programming Graphical User Interfaces
+*
+* assignment: Quarter Project - Checkpoint 1
+* date last modified: 1/31/2016
+*
+* purpose: The main JFrame of our class that holds all the panels.
+* Mainly for switching between the panels. 
+*
+****************************************************************/ 
 import javax.swing.Timer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.CardLayout;
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class Hangman extends javax.swing.JFrame 
 {
     private CardLayout cl;
     private Timer timer;
-    private gamePanel game;
+    private GamePanel game;
+    private HighScores scores;
+    private ArrayList<javax.swing.JLabel> scoreLabels;
     /**
-     * Creates new form Project245
+     * Creates new form Hangman
      */
-    public Hangman() 
+    public Hangman() throws IOException 
     {
         initComponents();
-        game = new gamePanel();
+        scores = new HighScores();
+        scoreLabels = new ArrayList<javax.swing.JLabel>();
+        scoreLabels.add(score1);
+        scoreLabels.add(score2);
+        scoreLabels.add(score3);
+        scoreLabels.add(score4);
+        scoreLabels.add(score5);
         cl = new CardLayout();
         mainPanel.setLayout(cl);
-        
         mainPanel.add("splash card", splashPanel);
         mainPanel.add("menu card", menuPanel);
-        mainPanel.add("game card", game);
         mainPanel.add("high scores", highScores);
         mainPanel.add("credits card", creditsPanel);
+        mainPanel.add("game over", gameOver);
+        
         //Jose Marquez - place center of the screen
         this.setLocationRelativeTo(null);
         timer = new Timer(3000, new TimerListener());
         timer.setRepeats(false);
         timer.start();
     }
-
+    //class:TimerListener
+    //purpose:Listener for the swing timer.
     class TimerListener implements ActionListener
     {
+        //method:actionPerformed
+        //purpose:Goes to menu after timer finishes.
+        @Override
         public void actionPerformed(ActionEvent evt)
         {
             goMenu();
         }
     }
-
+    //method:goSplash
+    //purpose:Switches to the splash screen.
     public void goSplash()
     {
         cl.show(mainPanel, "splash card");  
     }
+    //method:goMenu
+    //purpose:Switches to the menu screen.
     public void goMenu()
     {
         cl.show(mainPanel, "menu card");
     }
+    //method:startGame()
+    //purpose:Creates a new game and shows it.
     public void startGame()
     {
+        game = new GamePanel(cl, mainPanel, scoreLabel,newHSLabel, scores);
+        mainPanel.add("game card", game);
         cl.show(mainPanel, "game card");
     }
+    //method:goHighScores
+    //purpose:Switches to the high scores screen.
     public void goHighScores()
     {
+        for(int i = 0; i < 5; i++)
+        {
+            scoreLabels.get(i).setText(scores.getScores()[i]);
+        }
         cl.show(mainPanel, "high scores");
     }
+    //method:goCredits
+    //purpose:Switches to the credits screen.
     public void goCredits()
     {
         cl.show(mainPanel, "credits card");
@@ -81,7 +121,7 @@ public class Hangman extends javax.swing.JFrame
         jLabel5 = new javax.swing.JLabel();
         backBtn1 = new javax.swing.JButton();
         score1 = new javax.swing.JLabel();
-        score = new javax.swing.JLabel();
+        score2 = new javax.swing.JLabel();
         score3 = new javax.swing.JLabel();
         score4 = new javax.swing.JLabel();
         score5 = new javax.swing.JLabel();
@@ -90,6 +130,11 @@ public class Hangman extends javax.swing.JFrame
         name2 = new javax.swing.JLabel();
         backBtn = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
+        gameOver = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
+        endGame = new javax.swing.JButton();
+        scoreLabel = new javax.swing.JLabel();
+        newHSLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(0, 0, 0));
@@ -216,14 +261,19 @@ public class Hangman extends javax.swing.JFrame
             }
         });
 
+        score1.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
         score1.setText("Highscore1");
 
-        score.setText("Highscore2");
+        score2.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
+        score2.setText("Highscore2");
 
+        score3.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
         score3.setText("Highscore3");
 
+        score4.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
         score4.setText("Highscore4");
 
+        score5.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
         score5.setText("Highscore5");
 
         javax.swing.GroupLayout highScoresLayout = new javax.swing.GroupLayout(highScores);
@@ -240,7 +290,7 @@ public class Hangman extends javax.swing.JFrame
                     .addComponent(score5, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(score4, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(score3, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(score, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(score2, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(score1, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5))
                 .addContainerGap(99, Short.MAX_VALUE))
@@ -253,7 +303,7 @@ public class Hangman extends javax.swing.JFrame
                 .addGap(18, 18, 18)
                 .addComponent(score1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(score, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(score2, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(score3, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -319,6 +369,64 @@ public class Hangman extends javax.swing.JFrame
                 .addGap(28, 28, 28))
         );
 
+        gameOver.setBackground(new java.awt.Color(0, 0, 0));
+
+        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 60)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel3.setText("Game Over");
+
+        endGame.setBackground(new java.awt.Color(0, 0, 0));
+        endGame.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        endGame.setForeground(new java.awt.Color(255, 255, 255));
+        endGame.setText("End Game");
+        endGame.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                endGameActionPerformed(evt);
+            }
+        });
+
+        scoreLabel.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
+        scoreLabel.setForeground(new java.awt.Color(255, 255, 255));
+        scoreLabel.setText("Score:0");
+
+        newHSLabel.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
+        newHSLabel.setForeground(new java.awt.Color(255, 255, 255));
+        newHSLabel.setText("New High Score!");
+        newHSLabel.setEnabled(false);
+
+        javax.swing.GroupLayout gameOverLayout = new javax.swing.GroupLayout(gameOver);
+        gameOver.setLayout(gameOverLayout);
+        gameOverLayout.setHorizontalGroup(
+            gameOverLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(gameOverLayout.createSequentialGroup()
+                .addGap(222, 222, 222)
+                .addGroup(gameOverLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(scoreLabel)
+                    .addComponent(endGame, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, gameOverLayout.createSequentialGroup()
+                .addContainerGap(134, Short.MAX_VALUE)
+                .addGroup(gameOverLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel3)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, gameOverLayout.createSequentialGroup()
+                        .addComponent(newHSLabel)
+                        .addGap(30, 30, 30)))
+                .addGap(131, 131, 131))
+        );
+        gameOverLayout.setVerticalGroup(
+            gameOverLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(gameOverLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(scoreLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(newHSLabel)
+                .addGap(25, 25, 25)
+                .addComponent(endGame, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(128, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
@@ -335,6 +443,11 @@ public class Hangman extends javax.swing.JFrame
                     .addGap(0, 0, Short.MAX_VALUE)
                     .addComponent(creditsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGap(0, 0, Short.MAX_VALUE)))
+            .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(mainPanelLayout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(gameOver, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -349,6 +462,11 @@ public class Hangman extends javax.swing.JFrame
                 .addGroup(mainPanelLayout.createSequentialGroup()
                     .addGap(0, 0, Short.MAX_VALUE)
                     .addComponent(creditsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(mainPanelLayout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(gameOver, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGap(0, 0, Short.MAX_VALUE)))
         );
 
@@ -373,16 +491,14 @@ public class Hangman extends javax.swing.JFrame
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        startGame();
+        startGame();    
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void backBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backBtn1ActionPerformed
-
         goMenu();
     }//GEN-LAST:event_backBtn1ActionPerformed
 
     private void backBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backBtnActionPerformed
-
         goMenu();
     }//GEN-LAST:event_backBtnActionPerformed
 
@@ -393,6 +509,10 @@ public class Hangman extends javax.swing.JFrame
     private void creditsBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_creditsBtnActionPerformed
         goCredits();
     }//GEN-LAST:event_creditsBtnActionPerformed
+
+    private void endGameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_endGameActionPerformed
+        goMenu();
+    }//GEN-LAST:event_endGameActionPerformed
 
     /**
      * @param args the command line arguments
@@ -431,8 +551,15 @@ public class Hangman extends javax.swing.JFrame
         {
             public void run() 
            {
-                new Hangman().setSize(600,400);
-                new Hangman().setVisible(true);
+               try
+               {
+                    new Hangman().setSize(600,400);
+                    new Hangman().setVisible(true);
+               }catch(IOException ex)
+               {
+                ex.printStackTrace();
+               }
+                
             }
         });
     }
@@ -442,11 +569,14 @@ public class Hangman extends javax.swing.JFrame
     private javax.swing.JButton backBtn1;
     private javax.swing.JButton creditsBtn;
     private javax.swing.JPanel creditsPanel;
+    private javax.swing.JButton endGame;
+    private javax.swing.JPanel gameOver;
     private javax.swing.JButton highScoreBtn;
     private javax.swing.JPanel highScores;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -454,11 +584,13 @@ public class Hangman extends javax.swing.JFrame
     private javax.swing.JPanel menuPanel;
     private javax.swing.JLabel name1;
     private javax.swing.JLabel name2;
-    private javax.swing.JLabel score;
+    private javax.swing.JLabel newHSLabel;
     private javax.swing.JLabel score1;
+    private javax.swing.JLabel score2;
     private javax.swing.JLabel score3;
     private javax.swing.JLabel score4;
     private javax.swing.JLabel score5;
+    private javax.swing.JLabel scoreLabel;
     private javax.swing.JPanel splashPanel;
     // End of variables declaration//GEN-END:variables
 }

@@ -1,25 +1,56 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/***************************************************************
+* file: GamePanel.java
+* author: Team Water Bottle
+* class: CS 245 – Programming Graphical User Interfaces
+*
+* assignment: Quarter Project - Checkpoint 1
+* date last modified: 1/31/2016
+*
+* purpose: The panel that contains the hangman game. 
+*
+****************************************************************/ 
+import java.awt.CardLayout;
 import java.util.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import javax.swing.Timer;
 import java.text.DateFormat;
-/**
- *
- * @author Timothy
- */
-public class gamePanel extends javax.swing.JPanel {
+import javax.swing.ImageIcon;
+import javax.swing.JPanel;
+import javax.swing.JLabel;
 
+public class GamePanel extends javax.swing.JPanel {
+    //create instance of HangmanMethods class
+    private HangmanMethods methods = new HangmanMethods();
+    //CardLayout to switch between screens
+    private CardLayout cl;
+    //Highscores class to update scores
+    private HighScores scores;
+    private JPanel mainPanel;
+    private JLabel finalScore;
+    private JLabel newHS;
+    //create stringBuilder to work with regular expressions
+    private StringBuilder passwordHidden;
+    private String password;
+    
     /**
      * Creates new form gamePanel
      */
-    public gamePanel() 
+    public GamePanel(CardLayout layout, JPanel mPanel, JLabel score, JLabel nhs, HighScores hs) 
     {
-        initComponents();
+        initComponents();    
+        updateImage();
+        getWord();
+        
+        finalScore = score;
+        cl = layout;
+        mainPanel = mPanel;
+        newHS = nhs;
+        scores = hs;
+        
+        updateLabels();
+        
         Timer timer = new Timer(500, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -31,17 +62,117 @@ public class gamePanel extends javax.swing.JPanel {
         timer.setInitialDelay(0);
         timer.start();
     }
+    
+    //method: getWord
+    //purpose:gets word from the HangmanMethods class
+    public void getWord()
+    {
+        passwordHidden = new StringBuilder();
+        password = methods.word();
+        passwordHidden.append(password.replaceAll(".", "*"));
+        wordField.setText(passwordHidden.toString());
+    }
+
+    //method: display
+    //purpose: reveals the correctly guessed letters 
+    public void display(char letter, String letter2)
+    {
+        int index= 0;
+        boolean updated = false;
+        while((index = password.toLowerCase().indexOf(letter, index)) != -1)
+        {
+            if(index == 0)
+                passwordHidden.setCharAt(index, password.toUpperCase().charAt(index));
+            else
+                passwordHidden.setCharAt(index, password.charAt(index));
+            index++;
+            updated = true;
+        }
+
+        if(updated){
+            wordField.setText(passwordHidden.toString());
+            if(methods.completed())
+                gameOver(false);
+        }
+    }
+
+    //method: updateImage
+    //purpose: updates image whenever there is a wrong guess
+    public void updateImage(){
+        
+        int imageNumber = 6-methods.guessesLeft();
+        
+        if(imageNumber == 0){
+            ImageIcon image = new ImageIcon(getClass().getResource("/hangman.png"));
+            imageDisplay.setIcon(image);
+        }
+
+        if(imageNumber == 1){
+            ImageIcon image = new ImageIcon(getClass().getResource("/head.png"));
+            imageDisplay.setIcon(image);
+        }
+
+        if(imageNumber == 2){
+            ImageIcon image = new ImageIcon(getClass().getResource("/torso.png"));
+            imageDisplay.setIcon(image);
+        }
+
+        if(imageNumber == 3){
+            ImageIcon image = new ImageIcon(getClass().getResource("/onearm.png"));
+            imageDisplay.setIcon(image);
+        }
+
+        if(imageNumber == 4){
+            ImageIcon image = new ImageIcon(getClass().getResource("/twoarms.png"));
+            imageDisplay.setIcon(image);
+        } 
+
+        if(imageNumber == 5){
+            ImageIcon image = new ImageIcon(getClass().getResource("/oneleg.png"));
+            imageDisplay.setIcon(image);
+        }
+        if(imageNumber == 6){
+            ImageIcon image = new ImageIcon(getClass().getResource("/twoleg.png"));
+            imageDisplay.setIcon(image);
+            gameOver(false);
+        }
+        updateLabels();
+    }
+    //method:updateLabels()
+    //purpose:Updates the users current score and the number of tries remaining.
+    public void updateLabels()
+    {
+        scoreLabel.setText("Score:"+methods.getScore());
+        guessLabel.setText("Guesses:"+methods.guessesLeft());
+    }
+    //method:gameOver()
+    //purpose:Handles the showing of the game over screen.
+    public void gameOver(boolean skipped)
+    {
+        newHS.setVisible(false);
+        if(skipped)
+            finalScore.setText("Score:" + 0);
+        else
+        {
+            finalScore.setText("Score:" + methods.getScore());
+            try
+            {
+                //See if new score is a high score
+                if(scores.addScore(methods.getScore(), "ABC"))
+                    newHS.setVisible(true);
+            }catch(IOException ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+        //Removes this panel instance from the main panel to enable creating new games.
+        mainPanel.remove(this);
+        cl.show(mainPanel, "game over");      
+    }
+    //method:currentDate
+    //purpose:updates the current date on screen.
     public void currentDate()
     {
-        Calendar c = new GregorianCalendar();
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
-        int year = c.get(Calendar.YEAR);
-        
-        int sec = c.get(Calendar.SECOND);
-        int min = c.get(Calendar.MINUTE);
-        int hour = c.get(Calendar.HOUR);
-        String current = (month+1)+"/"+day+"/"+year+"  "+hour+":"+min+":"+sec;
         dateTxt.setText(DateFormat.getDateTimeInstance().format(new Date()));
     }
     /**
@@ -81,7 +212,13 @@ public class gamePanel extends javax.swing.JPanel {
         xBtn = new javax.swing.JButton();
         yBtn = new javax.swing.JButton();
         zBtn = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        skipBtn = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
+        wordField = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        imageDisplay = new javax.swing.JLabel();
+        scoreLabel = new javax.swing.JLabel();
+        guessLabel = new javax.swing.JLabel();
 
         setPreferredSize(new java.awt.Dimension(600, 400));
 
@@ -273,12 +410,63 @@ public class gamePanel extends javax.swing.JPanel {
             }
         });
 
-        jButton1.setText("Back");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        skipBtn.setText("Skip");
+        skipBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                skipBtnActionPerformed(evt);
             }
         });
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        wordField.setFont(new java.awt.Font("Tahoma", 1, 50)); // NOI18N
+        wordField.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(wordField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 523, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(wordField, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jPanel2.setPreferredSize(new java.awt.Dimension(516, 168));
+
+        imageDisplay.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+
+        scoreLabel.setText("Score:");
+
+        guessLabel.setText("Guesses:");
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(scoreLabel)
+                    .addComponent(guessLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(imageDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 420, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(imageDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(scoreLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(guessLabel)
+                .addContainerGap(127, Short.MAX_VALUE))
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -288,70 +476,70 @@ public class gamePanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(268, 268, 268)
-                                .addComponent(dateTxt))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton1))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(aBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(bBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(cBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(dBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(eBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(fBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(gBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(hBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(iBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(kBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(mBtn))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(nBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(oBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(pBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(qBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(rBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(sBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(tBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(uBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(vBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(wBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(xBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(yBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(zBtn)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addComponent(nBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(oBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(pBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(qBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(rBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(sBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(tBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(uBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(vBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(wBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(xBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(yBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(zBtn))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(skipBtn)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(dateTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                            .addComponent(aBtn)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(bBtn)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(cBtn)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(dBtn)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(eBtn)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(fBtn)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(gBtn)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(hBtn)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(iBtn)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(jBtn)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(kBtn)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(lBtn)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(mBtn))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 525, Short.MAX_VALUE)
+                                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -362,10 +550,14 @@ public class gamePanel extends javax.swing.JPanel {
                         .addComponent(jLabel1))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(dateTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton1)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 277, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(dateTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(skipBtn))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(aBtn)
                     .addComponent(bBtn)
@@ -395,117 +587,274 @@ public class gamePanel extends javax.swing.JPanel {
                     .addComponent(xBtn)
                     .addComponent(yBtn)
                     .addComponent(zBtn))
-                .addContainerGap())
+                .addContainerGap(31, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
-
+    //methods:*BtnActionPerformed
+    //purpose:Keyboard
     private void aBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aBtnActionPerformed
-        // TODO add your handling code here:
+        aBtn.setEnabled(false);
+        
+        if(methods.checkLetter('A')){
+            display('a', "a");
+     
+        }else{
+            updateImage();
+        }
     }//GEN-LAST:event_aBtnActionPerformed
 
     private void bBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bBtnActionPerformed
-        // TODO add your handling code here:
+        bBtn.setEnabled(false);
+        
+        if(methods.checkLetter('B')){
+            display('b', "b");
+        }else{
+            updateImage();
+        }
     }//GEN-LAST:event_bBtnActionPerformed
 
     private void cBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cBtnActionPerformed
-        // TODO add your handling code here:
+        cBtn.setEnabled(false);
+        
+        if(methods.checkLetter('C')){
+            display('c', "c");
+        }else{
+            updateImage();
+        }
     }//GEN-LAST:event_cBtnActionPerformed
 
     private void dBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dBtnActionPerformed
-        // TODO add your handling code here:
+        dBtn.setEnabled(false);
+        
+        if(methods.checkLetter('D')){
+            display('d', "d");
+        }else{
+            updateImage();
+        }
     }//GEN-LAST:event_dBtnActionPerformed
 
     private void eBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eBtnActionPerformed
-        // TODO add your handling code here:
+        eBtn.setEnabled(false);
+        
+        if(methods.checkLetter('E')){
+            display('e', "e"); 
+        }else{
+            updateImage();
+        }
     }//GEN-LAST:event_eBtnActionPerformed
 
     private void fBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fBtnActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_fBtnActionPerformed
+        fBtn.setEnabled(false);
+        
+        if(methods.checkLetter('F')){
+            
+         display('f', "f");
+
+        }else{
+            updateImage();
+        }    }//GEN-LAST:event_fBtnActionPerformed
 
     private void gBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gBtnActionPerformed
-        // TODO add your handling code here:
+        gBtn.setEnabled(false);
+        
+        if(methods.checkLetter('G')){
+          display('g', "g"); 
+        }else{
+            updateImage();
+        }
     }//GEN-LAST:event_gBtnActionPerformed
 
     private void hBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hBtnActionPerformed
-        // TODO add your handling code here:
+        hBtn.setEnabled(false);
+        
+        if(methods.checkLetter('H')){
+            display('h', "h");  
+        }else{
+            updateImage();
+        }
     }//GEN-LAST:event_hBtnActionPerformed
 
     private void iBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_iBtnActionPerformed
-        // TODO add your handling code here:
+        iBtn.setEnabled(false);
+        
+        if(methods.checkLetter('I')){   
+            display('i', "i");
+        }else{
+           updateImage();
+        }
     }//GEN-LAST:event_iBtnActionPerformed
 
     private void jBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnActionPerformed
-        // TODO add your handling code here:
+        jBtn.setEnabled(false);
+        
+        if(methods.checkLetter('J')){      
+            display('j', "j");
+        }else{
+            updateImage();
+        }
     }//GEN-LAST:event_jBtnActionPerformed
 
     private void kBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_kBtnActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_kBtnActionPerformed
+        kBtn.setEnabled(false);
+        
+        if(methods.checkLetter('K')){
+            display('k', "k");
+        }else{
+            updateImage();
+        }    }//GEN-LAST:event_kBtnActionPerformed
 
     private void lBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lBtnActionPerformed
-        // TODO add your handling code here:
+        lBtn.setEnabled(false);
+        
+        if(methods.checkLetter('L')){
+            display('l', "l");
+        }else{
+            updateImage();
+        }
     }//GEN-LAST:event_lBtnActionPerformed
 
     private void mBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mBtnActionPerformed
-        // TODO add your handling code here:
+        mBtn.setEnabled(false);
+
+        if(methods.checkLetter('M')){
+            display('m', "m");
+        }else{
+            updateImage();
+        }
     }//GEN-LAST:event_mBtnActionPerformed
 
     private void nBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nBtnActionPerformed
-        // TODO add your handling code here:
+        nBtn.setEnabled(false);
+        
+        if(methods.checkLetter('N')){
+            display('n', "n");
+        }else{
+            updateImage();
+        }
     }//GEN-LAST:event_nBtnActionPerformed
 
     private void oBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_oBtnActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_oBtnActionPerformed
+        oBtn.setEnabled(false);
+        
+        if(methods.checkLetter('O')){
+           display('o', "o");
+        }else{
+            updateImage();
+        }    }//GEN-LAST:event_oBtnActionPerformed
 
     private void pBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pBtnActionPerformed
-        // TODO add your handling code here:
+        pBtn.setEnabled(false);
+        
+        if(methods.checkLetter('P')){
+            display('p', "p");
+        }else{
+            updateImage();
+        }
     }//GEN-LAST:event_pBtnActionPerformed
 
     private void qBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_qBtnActionPerformed
-        // TODO add your handling code here:
+        qBtn.setEnabled(false);
+        
+        if(methods.checkLetter('Q')){
+            display('q', "q");
+        }else{
+            updateImage();
+        }
     }//GEN-LAST:event_qBtnActionPerformed
 
     private void rBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rBtnActionPerformed
-        // TODO add your handling code here:
+        rBtn.setEnabled(false);
+        
+        if(methods.checkLetter('R')){
+            display('r', "r");
+        }else{
+            updateImage();
+        }
     }//GEN-LAST:event_rBtnActionPerformed
 
     private void sBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sBtnActionPerformed
-        // TODO add your handling code here:
+        sBtn.setEnabled(false);
+        
+        if(methods.checkLetter('S')){
+            display('s', "s");
+        }else{
+            updateImage();
+        }
     }//GEN-LAST:event_sBtnActionPerformed
 
     private void tBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tBtnActionPerformed
-        // TODO add your handling code here:
+        tBtn.setEnabled(false);
+        
+        if(methods.checkLetter('T')){ 
+            display('t', "t");
+        }else{
+            updateImage();
+        }
     }//GEN-LAST:event_tBtnActionPerformed
 
     private void uBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uBtnActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_uBtnActionPerformed
+        uBtn.setEnabled(false);
+        
+        if(methods.checkLetter('U')){
+            display('u', "u");
+        }else{
+            updateImage();
+        }    }//GEN-LAST:event_uBtnActionPerformed
 
     private void vBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_vBtnActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_vBtnActionPerformed
+        vBtn.setEnabled(false);
+        
+        if(methods.checkLetter('V')){ 
+           display('v', "v");
+        }else{
+            updateImage();
+        }    }//GEN-LAST:event_vBtnActionPerformed
 
     private void wBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_wBtnActionPerformed
-        // TODO add your handling code here:
+        wBtn.setEnabled(false);
+        
+        if(methods.checkLetter('W')){
+         display('w', "w");     
+        }else{
+            updateImage();
+        }
     }//GEN-LAST:event_wBtnActionPerformed
 
     private void xBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_xBtnActionPerformed
-        // TODO add your handling code here:
+        xBtn.setEnabled(false);
+        
+        if(methods.checkLetter('X')){ 
+            display('x', "x");
+        }else{
+            updateImage();
+        }
     }//GEN-LAST:event_xBtnActionPerformed
 
     private void yBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_yBtnActionPerformed
-        // TODO add your handling code here:
+        yBtn.setEnabled(false);
+        
+        if(methods.checkLetter('Y')){
+            display('y', "y");
+        } else{
+            updateImage();
+        }  
     }//GEN-LAST:event_yBtnActionPerformed
 
     private void zBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zBtnActionPerformed
-        // TODO add your handling code here:
+        zBtn.setEnabled(false);
+        
+        if(methods.checkLetter('Z')){
+            display('z', "z");
+        }else{
+            updateImage();
+        }
     }//GEN-LAST:event_zBtnActionPerformed
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-
-    }//GEN-LAST:event_jButton1ActionPerformed
+    //End keyboard
+    //method:skipBtnActionPerformed
+    //purpose:Skips to game over screen with a score of 0
+    private void skipBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_skipBtnActionPerformed
+       gameOver(true);      
+    }//GEN-LAST:event_skipBtnActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -517,11 +866,14 @@ public class gamePanel extends javax.swing.JPanel {
     private javax.swing.JButton eBtn;
     private javax.swing.JButton fBtn;
     private javax.swing.JButton gBtn;
+    private javax.swing.JLabel guessLabel;
     private javax.swing.JButton hBtn;
     private javax.swing.JButton iBtn;
+    private javax.swing.JLabel imageDisplay;
     private javax.swing.JButton jBtn;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JButton kBtn;
     private javax.swing.JButton lBtn;
     private javax.swing.JButton mBtn;
@@ -531,10 +883,13 @@ public class gamePanel extends javax.swing.JPanel {
     private javax.swing.JButton qBtn;
     private javax.swing.JButton rBtn;
     private javax.swing.JButton sBtn;
+    private javax.swing.JLabel scoreLabel;
+    private javax.swing.JButton skipBtn;
     private javax.swing.JButton tBtn;
     private javax.swing.JButton uBtn;
     private javax.swing.JButton vBtn;
     private javax.swing.JButton wBtn;
+    private javax.swing.JLabel wordField;
     private javax.swing.JButton xBtn;
     private javax.swing.JButton yBtn;
     private javax.swing.JButton zBtn;
