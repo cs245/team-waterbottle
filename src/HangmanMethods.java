@@ -89,6 +89,10 @@ public class HangmanMethods {
     { 
         return score;
     }
+    public void skipper()
+    {
+        score = 0;
+    }
     //method:completed
     //purpose:returns true if the word is complete and false otherwise
     public boolean completed()
