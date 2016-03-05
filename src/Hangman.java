@@ -66,6 +66,8 @@ public class Hangman extends javax.swing.JPanel {
         timer.setCoalesce(true);
         timer.setInitialDelay(0);
         timer.start();
+        
+        skipBtn.setToolTipText("Click this button to skip this mini game.");
     }
     
     //method: getWord

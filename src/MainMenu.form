@@ -224,7 +224,7 @@
                               <Component id="highScoreBtn" alignment="1" min="-2" pref="125" max="-2" attributes="0"/>
                               <Component id="creditsBtn" alignment="1" min="-2" pref="125" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="jButton1" alignment="1" min="-2" pref="125" max="-2" attributes="0"/>
+                          <Component id="playBtn" alignment="1" min="-2" pref="125" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -236,7 +236,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jLabel4" min="-2" pref="223" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="jButton1" min="-2" pref="39" max="-2" attributes="0"/>
+                      <Component id="playBtn" min="-2" pref="39" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="highScoreBtn" min="-2" pref="39" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
@@ -247,7 +247,7 @@
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Component class="javax.swing.JButton" name="jButton1">
+            <Component class="javax.swing.JButton" name="playBtn">
               <Properties>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="0" green="0" red="0" type="rgb"/>
@@ -261,7 +261,7 @@
                 <Property name="text" type="java.lang.String" value="Play"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="playBtnActionPerformed"/>
               </Events>
             </Component>
             <Component class="javax.swing.JButton" name="highScoreBtn">
@@ -354,7 +354,7 @@
                       <Component id="score5" min="-2" pref="27" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="63" max="-2" attributes="0"/>
                       <Component id="backBtn1" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="36" max="32767" attributes="0"/>
+                      <EmptySpace pref="34" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -529,7 +529,7 @@
                                   <Group type="102" attributes="0">
                                       <Component id="saveScoreBtn" min="-2" pref="143" max="-2" attributes="0"/>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="endGame" min="-2" pref="143" max="-2" attributes="0"/>
+                                      <Component id="endGameBtn" min="-2" pref="143" max="-2" attributes="0"/>
                                   </Group>
                                   <Component id="newHSLabel" min="-2" max="-2" attributes="0"/>
                               </Group>
@@ -551,7 +551,7 @@
                       <Component id="newHSLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="35" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="endGame" alignment="3" min="-2" pref="63" max="-2" attributes="0"/>
+                          <Component id="endGameBtn" alignment="3" min="-2" pref="63" max="-2" attributes="0"/>
                           <Component id="saveScoreBtn" alignment="3" min="-2" pref="63" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace pref="118" max="32767" attributes="0"/>
@@ -571,7 +571,7 @@
                 <Property name="text" type="java.lang.String" value="Game Over"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JButton" name="endGame">
+            <Component class="javax.swing.JButton" name="endGameBtn">
               <Properties>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="0" green="0" red="0" type="rgb"/>
@@ -585,7 +585,7 @@
                 <Property name="text" type="java.lang.String" value="End Game"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="endGameActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="endGameBtnActionPerformed"/>
               </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="scoreLabel">

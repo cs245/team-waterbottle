@@ -83,6 +83,8 @@ public class ColorGame extends javax.swing.JPanel
         timer.setInitialDelay(0);
         timer.start();
         
+        skipBtn.setToolTipText("Click this button to skip this mini game");
+        
         newGame();
         for(int i = 0; i < 5; i++)
         {

@@ -16,6 +16,10 @@ import java.awt.event.ActionListener;
 import java.awt.CardLayout;
 import java.io.IOException;
 import java.util.ArrayList;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
 
 public class MainMenu extends javax.swing.JFrame 
 {
@@ -49,12 +53,69 @@ public class MainMenu extends javax.swing.JFrame
         mainPanel.add("game over", gameOver);
         mainPanel.add("new high scores", saveHighScore);
         
-        //Jose Marquez - place center of the screen
+        //purpose: key bindings
+        mainPanel.getInputMap(mainPanel.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ESCAPE"), "exit");
+        mainPanel.getActionMap().put("exit", exit);
+        
+        mainPanel.getInputMap(mainPanel.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("F1"), "credits");
+        mainPanel.getActionMap().put("credits", credits );
+        
+        //place center of the screen
         this.setLocationRelativeTo(null);
         timer = new Timer(3000, new TimerListener());
         timer.setRepeats(false);
         timer.start();
+        
+        //purpose: tool tips
+        playBtn.setToolTipText("Click this button to start mini games.");
+        highScoreBtn.setToolTipText("Click this button to see high scores.");
+        creditsBtn.setToolTipText("Click this button to see credits.");
+        
+        backBtn1.setToolTipText("Click this button to go back to the menu.");
+        backBtn.setToolTipText("Click this button to go back to the menu.");
+        
+        saveScoreBtn.setToolTipText("Click this button to save your high score.");
+        endGameBtn.setToolTipText("Click this button to go back to the menu.");
+        
+        nameDisplayTxt.setToolTipText("Enter your name here");
+        saveBtn.setToolTipText("Click this button to save your high score");
     }
+    
+    //purpose: action for key binding of escape
+    Action exit= new AbstractAction() {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            
+            System.out.println("exit");
+            System.exit(0);
+            
+            throw new UnsupportedOperationException("Not supported yet."); 
+        }
+
+    };
+    
+    //purpose: action for key binding of show credits
+    Action credits= new AbstractAction() {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            
+            
+            JOptionPane.showMessageDialog(null, "Timothy Ngo, 009980659\nJose Marquez, 009990552"
+                    + "\nCS 245 Project \nWinter 2016", "Credits", JOptionPane.PLAIN_MESSAGE);
+            
+            System.out.println("credits");
+            
+            if(JOptionPane.OK_OPTION == 0) {
+                return;
+            }
+            
+            throw new UnsupportedOperationException("Not supported yet."); 
+        }
+
+    };
+    
     //class:TimerListener
     //purpose:Listener for the swing timer.
     class TimerListener implements ActionListener
@@ -111,6 +172,12 @@ public class MainMenu extends javax.swing.JFrame
         cl.show(mainPanel, "new high scores");
         
     }
+    
+    
+  
+
+    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -125,7 +192,7 @@ public class MainMenu extends javax.swing.JFrame
         jLabel2 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         menuPanel = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        playBtn = new javax.swing.JButton();
         highScoreBtn = new javax.swing.JButton();
         creditsBtn = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
@@ -144,7 +211,7 @@ public class MainMenu extends javax.swing.JFrame
         jLabel6 = new javax.swing.JLabel();
         gameOver = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        endGame = new javax.swing.JButton();
+        endGameBtn = new javax.swing.JButton();
         scoreLabel = new javax.swing.JLabel();
         newHSLabel = new javax.swing.JLabel();
         saveScoreBtn = new javax.swing.JButton();
@@ -203,13 +270,13 @@ public class MainMenu extends javax.swing.JFrame
         menuPanel.setMinimumSize(new java.awt.Dimension(600, 400));
         menuPanel.setPreferredSize(new java.awt.Dimension(600, 400));
 
-        jButton1.setBackground(new java.awt.Color(0, 0, 0));
-        jButton1.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.setText("Play");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        playBtn.setBackground(new java.awt.Color(0, 0, 0));
+        playBtn.setFont(new java.awt.Font("Consolas", 1, 14)); // NOI18N
+        playBtn.setForeground(new java.awt.Color(255, 255, 255));
+        playBtn.setText("Play");
+        playBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                playBtnActionPerformed(evt);
             }
         });
 
@@ -250,7 +317,7 @@ public class MainMenu extends javax.swing.JFrame
                     .addGroup(menuPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(highScoreBtn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(creditsBtn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(playBtn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
         menuPanelLayout.setVerticalGroup(
@@ -259,7 +326,7 @@ public class MainMenu extends javax.swing.JFrame
                 .addContainerGap()
                 .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(playBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(highScoreBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -393,13 +460,13 @@ public class MainMenu extends javax.swing.JFrame
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Game Over");
 
-        endGame.setBackground(new java.awt.Color(0, 0, 0));
-        endGame.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
-        endGame.setForeground(new java.awt.Color(255, 255, 255));
-        endGame.setText("End Game");
-        endGame.addActionListener(new java.awt.event.ActionListener() {
+        endGameBtn.setBackground(new java.awt.Color(0, 0, 0));
+        endGameBtn.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        endGameBtn.setForeground(new java.awt.Color(255, 255, 255));
+        endGameBtn.setText("End Game");
+        endGameBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                endGameActionPerformed(evt);
+                endGameBtnActionPerformed(evt);
             }
         });
 
@@ -439,7 +506,7 @@ public class MainMenu extends javax.swing.JFrame
                             .addGroup(gameOverLayout.createSequentialGroup()
                                 .addComponent(saveScoreBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(endGame, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(endGameBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(newHSLabel))
                         .addGap(30, 30, 30)))
                 .addGap(131, 131, 131))
@@ -455,7 +522,7 @@ public class MainMenu extends javax.swing.JFrame
                 .addComponent(newHSLabel)
                 .addGap(35, 35, 35)
                 .addGroup(gameOverLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(endGame, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(endGameBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(saveScoreBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(118, Short.MAX_VALUE))
         );
@@ -593,9 +660,9 @@ public class MainMenu extends javax.swing.JFrame
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void playBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playBtnActionPerformed
         startGame();    
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_playBtnActionPerformed
 
     private void backBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backBtn1ActionPerformed
         goMenu();
@@ -613,9 +680,9 @@ public class MainMenu extends javax.swing.JFrame
         goCredits();
     }//GEN-LAST:event_creditsBtnActionPerformed
 
-    private void endGameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_endGameActionPerformed
+    private void endGameBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_endGameBtnActionPerformed
         goMenu();
-    }//GEN-LAST:event_endGameActionPerformed
+    }//GEN-LAST:event_endGameBtnActionPerformed
 
     private void saveScoreBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveScoreBtnActionPerformed
         
@@ -696,11 +763,10 @@ public class MainMenu extends javax.swing.JFrame
     private javax.swing.JButton backBtn1;
     private javax.swing.JButton creditsBtn;
     private javax.swing.JPanel creditsPanel;
-    private javax.swing.JButton endGame;
+    private javax.swing.JButton endGameBtn;
     private javax.swing.JPanel gameOver;
     private javax.swing.JButton highScoreBtn;
     private javax.swing.JPanel highScores;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -715,6 +781,7 @@ public class MainMenu extends javax.swing.JFrame
     private javax.swing.JTextField nameDisplayTxt;
     private javax.swing.JLabel newHSLabel;
     private javax.swing.JLabel newHSLabel1;
+    private javax.swing.JButton playBtn;
     private javax.swing.JButton saveBtn;
     private javax.swing.JPanel saveHighScore;
     private javax.swing.JButton saveScoreBtn;
