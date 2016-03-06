@@ -55,8 +55,11 @@ public class ColorGame extends javax.swing.JPanel
     private Random rand;
     private JButton saveScoreBtn;
     
+<<<<<<< HEAD
     private SudokuGame sudoku;
     
+=======
+>>>>>>> origin/master
     public ColorGame(int scr, CardLayout layout, JPanel mPanel, JLabel scoreLabel, JLabel nhs, HighScores hs, JButton saveBtn) 
     {
         initComponents();
@@ -142,6 +145,7 @@ public class ColorGame extends javax.swing.JPanel
         newHS.setVisible(false);
         saveScoreBtn.setVisible(false);
         if(skipped)
+<<<<<<< HEAD
         {
             score = 0;
         }
@@ -155,6 +159,32 @@ public class ColorGame extends javax.swing.JPanel
     public SudokuGame sudokuGame()
     {
         return sudoku;
+=======
+            finalScore.setText("Score:" + 0);
+        else
+        {
+            finalScore.setText("Score:" + score);
+            
+                //See if new score is a high score
+                if(scores.checkScore2(score))
+                    newHS.setVisible(true);
+                    saveScoreBtn.setVisible(true);
+            
+        }
+        //Removes this panel instance from the main panel to enable creating new games.
+        mainPanel.remove(this);
+        cl.show(mainPanel, "game over");         
+    }
+    
+    public void setScore(String name){
+        
+        try {
+            scores.addScore(score, name);    
+        } catch (IOException ex) {
+            Logger.getLogger(ColorGame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+           
+>>>>>>> origin/master
     }
     
     //method: hover

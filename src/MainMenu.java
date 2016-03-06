@@ -692,7 +692,11 @@ public class MainMenu extends javax.swing.JFrame
     private void saveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveBtnActionPerformed
         
         String name = nameDisplayTxt.getText().toString();
+<<<<<<< HEAD
         hangman.colorGame().sudokuGame().setScore(name);
+=======
+        hangman.colorGame().setScore(name);
+>>>>>>> origin/master
         nameDisplayTxt.setText("");
         goMenu();
         
