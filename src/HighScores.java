@@ -17,6 +17,8 @@ import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class HighScores 
 {
@@ -30,7 +32,7 @@ public class HighScores
     //method:constructor
     //purpose: Checks if there is already a high scores txt file  and creates a new one if there isn't.
     //If it exists then it reads in the scores.
-    public HighScores() throws IOException
+    public HighScores()
     {
         
         scores = new ArrayList<String>();
@@ -39,7 +41,11 @@ public class HighScores
         //Get current high scores
         if(highScores.exists() && !highScores.isDirectory())
         {
-            sc = new Scanner(highScores);
+            try {
+                sc = new Scanner(highScores);
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(HighScores.class.getName()).log(Level.SEVERE, null, ex);
+            }
             int i = 0;
             while(sc.hasNextLine())
             {
@@ -51,7 +57,11 @@ public class HighScores
         //Create new high scores
         else
         {
-            pw = new PrintWriter(new FileWriter(highScores));
+            try {
+                pw = new PrintWriter(new FileWriter(highScores));
+            } catch (IOException ex) {
+                Logger.getLogger(HighScores.class.getName()).log(Level.SEVERE, null, ex);
+            }
             for(int i = 0; i < 5; i++)
             {
                 pw.println("ABC....000");
@@ -62,16 +72,41 @@ public class HighScores
     }
     //method:checkScore
     //purpose:Checks if the given score is higher than any of the current high scores.
-    //        Returns the index if score is higher, and -1 if not.
+    //Returns the index if score is higher, and -1 if not.
     public int checkScore(int score)
     {
         for(int i = 0; i < 5; i++)
         {
-            if(Integer.parseInt(scores.get(i).substring(7)) < score)
+            String str = scores.get(i);  
+            str = str.replaceAll("\\D+","");
+            int oldScore = Integer.parseInt(str);
+            
+            if(oldScore < score){
                 return i;
+            }
         }
         return -1;
     }
+    
+    //method:checkScore2
+    //purpose:Checks if the given score is higher than any of the current high scores.
+    //Returns boolean
+    public boolean checkScore2(int score)
+    {
+        for(int i = 0; i < 5; i++)
+        {
+            String str = scores.get(i);  
+            str = str.replaceAll("\\D+","");
+            int oldScore = Integer.parseInt(str);
+            
+            if(oldScore < score){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    
     //method:addScore
     //purpose:Check if new score is a high score and updates the scores ArrayListand file if it is.
     public boolean addScore(int score, String player) throws IOException
@@ -86,6 +121,9 @@ public class HighScores
         }
         return false;
     }
+    
+    
+    
     //method:getScores
     //purpose:Returns the score array.
     public String[] getScores()

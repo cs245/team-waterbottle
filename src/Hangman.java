@@ -17,6 +17,7 @@ import java.io.IOException;
 import javax.swing.Timer;
 import java.text.DateFormat;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 
@@ -30,6 +31,7 @@ public class Hangman extends javax.swing.JPanel {
     private JPanel mainPanel;
     private JLabel finalScore;
     private JLabel newHS;
+    private JButton saveScoreBtn;
     //create stringBuilder to work with regular expressions
     private StringBuilder passwordHidden;
     private String password;
@@ -39,7 +41,7 @@ public class Hangman extends javax.swing.JPanel {
     /**
      * Creates new form gamePanel
      */
-    public Hangman(CardLayout layout, JPanel mPanel, JLabel score, JLabel nhs, HighScores hs) 
+    public Hangman(CardLayout layout, JPanel mPanel, JLabel score, JLabel nhs, HighScores hs, JButton saveBtn) 
     {
         initComponents();    
         updateImage();
@@ -50,6 +52,7 @@ public class Hangman extends javax.swing.JPanel {
         finalScore = score;
         newHS = nhs;
         scores = hs;
+        saveScoreBtn = saveBtn;
         
         updateLabels();
         
@@ -63,6 +66,8 @@ public class Hangman extends javax.swing.JPanel {
         timer.setCoalesce(true);
         timer.setInitialDelay(0);
         timer.start();
+        
+        skipBtn.setToolTipText("Click this button to skip this mini game.");
     }
     
     //method: getWord
@@ -154,10 +159,15 @@ public class Hangman extends javax.swing.JPanel {
     
     public void nextGame()
     {
-        color = new ColorGame(methods.getScore(),cl, mainPanel, finalScore,newHS, scores);
+        color = new ColorGame(methods.getScore(),cl, mainPanel, finalScore,newHS, scores, saveScoreBtn);
         mainPanel.add("color game", color);
         mainPanel.remove(this);
         cl.show(mainPanel, "color game");
+    }
+    
+    public ColorGame colorGame(){
+        
+        return color;
     }
     
     //method:currentDate

@@ -1,3 +1,15 @@
+/***************************************************************
+* file: ColorGame.java
+* author: Team Water Bottle
+* class: CS 245 – Programming Graphical User Interfaces
+*
+* assignment: Quarter Project - Checkpoint 2
+* date last modified: 2/14/2016
+*
+* purpose: The panel that contains the ColorGame
+*
+*****************************************************************/ 
+
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Image;
@@ -9,7 +21,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.Timer;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -20,10 +35,13 @@ import javax.swing.JPanel;
  */
 public class ColorGame extends javax.swing.JPanel 
 {
+    
+    //purpose: initialize all colors and buttons here.
     private final Color[] COLORS = new Color[]{Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.MAGENTA};
     private final String[] CLR_STR = new String[]{"RED", "BLUE", "GREEN", "YELLOW", "PURPLE"};
     private final String[] CLR_PATH = new String[]{"/Buttons/Red.png", "/Buttons/Blue.png", "/Buttons/Green.png", "/Buttons/Yellow.png", "/Buttons/Purple.png"};
     private final String[] CLRH_PATH = new String[]{"/Buttons/RedH.png", "/Buttons/BlueH.png", "/Buttons/GreenH.png", "/Buttons/YellowH.png", "/Buttons/PurpleH.png"};                                              
+   
     private JLabel[] colorBtns;
     private int turns, answer, score;
     private Integer[] num;
@@ -35,8 +53,11 @@ public class ColorGame extends javax.swing.JPanel
     private JLabel finalScore;
     private JLabel newHS;
     private Random rand;
+    private JButton saveScoreBtn;
     
-    public ColorGame(int scr, CardLayout layout, JPanel mPanel, JLabel scoreLabel, JLabel nhs, HighScores hs) 
+    private SudokuGame sudoku;
+    
+    public ColorGame(int scr, CardLayout layout, JPanel mPanel, JLabel scoreLabel, JLabel nhs, HighScores hs, JButton saveBtn) 
     {
         initComponents();
         rand = new Random();
@@ -47,6 +68,7 @@ public class ColorGame extends javax.swing.JPanel
         finalScore = scoreLabel;
         newHS = nhs;
         scores = hs;
+        saveScoreBtn = saveBtn;
         
         colorBtns = new JLabel[]{color1, color2, color3, color4, color5};
         
@@ -63,6 +85,8 @@ public class ColorGame extends javax.swing.JPanel
         timer.setInitialDelay(0);
         timer.start();
         
+        skipBtn.setToolTipText("Click this button to skip this mini game");
+        
         newGame();
         for(int i = 0; i < 5; i++)
         {
@@ -70,6 +94,9 @@ public class ColorGame extends javax.swing.JPanel
         }
 
     }
+    
+    //method: newGame
+    //purpose: Ends game if user runs out of turns
     public void newGame()
     {
         scoreLabel.setText("Score:"+score);
@@ -107,38 +134,46 @@ public class ColorGame extends javax.swing.JPanel
             newGame();
         }
     }
+    
+    //method: gameOver
+    //purpose: once game ends will display score and if highscore also set
     public void gameOver(boolean skipped)
     {
         newHS.setVisible(false);
+        saveScoreBtn.setVisible(false);
         if(skipped)
-            finalScore.setText("Score:" + 0);
-        else
         {
-            finalScore.setText("Score:" + score);
-            try
-            {
-                //See if new score is a high score
-                if(scores.addScore(score, "ABC"))
-                    newHS.setVisible(true);
-            }catch(IOException ex)
-            {
-                ex.printStackTrace();
-            }
+            score = 0;
         }
-        //Removes this panel instance from the main panel to enable creating new games.
+        sudoku = new SudokuGame(score, cl, mainPanel, finalScore, newHS, scores, saveScoreBtn);
+        mainPanel.add("sudoku", sudoku);
         mainPanel.remove(this);
-        cl.show(mainPanel, "game over");         
+        cl.show(mainPanel, "sudoku");
+   
     }
+    
+    public SudokuGame sudokuGame()
+    {
+        return sudoku;
+    }
+    
+    //method: hover
+    //purpose: if mouse hovers over circle change image
     public void hover(int i)
     {
         ImageIcon imageIcon = scaleImg(new ImageIcon(getClass().getResource(CLRH_PATH[num[i]])), 100, 100);
         colorBtns[i].setIcon(imageIcon);
     }
+    //method: noHover
+    //purpose: default state of circle button when not being hovered
     public void noHover(int i)
     {
         ImageIcon imageIcon = scaleImg(new ImageIcon(getClass().getResource(CLR_PATH[num[i]])), 100, 100);
         colorBtns[i].setIcon(imageIcon);
     }
+    
+    //method: pickColors
+    //purpose: randomly picks circle button colors and the text color.
     public void pickColors()
     {
         colorTxt.setText(CLR_STR[rand.nextInt(5)]);
@@ -156,12 +191,16 @@ public class ColorGame extends javax.swing.JPanel
         }
     }
     
+    //method: ImageIcon
+    //purpose: size the circle image
     public ImageIcon scaleImg(ImageIcon icon, int w, int h)
     {
         Image image = icon.getImage().getScaledInstance(w, h, java.awt.Image.SCALE_SMOOTH);
         return new ImageIcon(image);
     }
     
+    //method: currentDate
+    //purpose: sets the time on the panel
     public void currentDate()
     {
         dateTxt.setText(DateFormat.getDateTimeInstance().format(new Date()));
